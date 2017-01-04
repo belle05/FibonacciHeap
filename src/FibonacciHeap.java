@@ -5,7 +5,10 @@
  */
 public class FibonacciHeap
 {
-
+	private HeapNode[][] heap = new HeapNode[0][0];
+	private boolean isEmpty = true;
+	private int size = 0;
+	private HeapNode min_node = null;
    /**
     * public boolean empty()
     *
@@ -17,7 +20,7 @@ public class FibonacciHeap
     */
     public boolean empty()
     {
-    	return false; // should be replaced by student code
+    	return isEmpty; // should be replaced by student code
     }
 		
    /**
@@ -25,9 +28,16 @@ public class FibonacciHeap
     *
     * Creates a node (of type HeapNode) which contains the given key, and inserts it into the heap. 
     */
+    private void setEmptyness(boolean emptyness) {
+    	this.isEmpty = emptyness;
+    }
+    
     public HeapNode insert(int key)
     {    
-    	return new HeapNode(); // should be replaced by student code
+    	if (isEmpty) {
+    		this.setEmptyness(false);
+    	}
+    	return new HeapNode(key); // should be replaced by student code
     }
 
    /**
@@ -50,7 +60,7 @@ public class FibonacciHeap
     */
     public HeapNode findMin()
     {
-    	return new HeapNode();// should be replaced by student code
+    	return new HeapNode(0);// should be replaced by student code
     } 
     
    /**
@@ -165,6 +175,75 @@ public class FibonacciHeap
     *  
     */
     public class HeapNode{
-  	
+    	protected int key;
+    	protected boolean mark = false;
+    	protected HeapNode parent = null;
+    	protected HeapNode child = null;
+    	protected HeapNode left = null;
+    	protected HeapNode right = null;
+    	protected int degree = 0;
+    	
+    	public HeapNode(int key) {
+    		this.setKey(key);
+    	}
+    	
+	   	public int getKey(int key) {
+			return this.key;
+		}
+    	
+	   	public void setKey(int key) {
+			this.key = key;
+		}
+	   	
+	   	public boolean getMark() {
+	   		return this.mark;
+	   	}
+	   	
+	   	public void setMark(boolean mark) {
+	   		this.mark = mark;
+	   	}
+    	
+	   	public HeapNode getParent() {
+			return parent;
+		}
+
+		public void setParent(HeapNode parent) {
+			this.parent = parent;
+		}
+
+		public HeapNode getChild() {
+			return this.child;
+		}
+		
+		public void setChild(HeapNode child) {
+			this.child = child;
+			child.setParent(this);
+		}
+		
+		public HeapNode getLeft() {
+			return this.left;
+		}
+		
+		public void setLeft(HeapNode left) {
+			this.left = left;
+			left.setRight(this);
+		}
+		
+		public HeapNode getRight() {
+			return this.right;
+		}
+		
+		public void setRight(HeapNode right) {
+			this.right = right;
+			right.setLeft(this);
+		}
+		
+		public int getDegree() {
+			return degree;
+		}
+
+	   	public void setDegree(int degree) {
+			this.degree = degree;
+		}
     }
 }
