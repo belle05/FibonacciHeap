@@ -111,6 +111,13 @@ public class FibonacciHeap
     */
     public void arrayToHeap(int[] array)
     {
+    	if (array.length == 0) {
+    		this.heap = new ArrayList<HeapNode>();
+    		this.heapSize = new ArrayList();
+    		this.isEmpty = true;
+    		this.size = 0;
+    		this.min_node = null;
+    	}
         return; //	 to be replaced by student code
     }
 	
