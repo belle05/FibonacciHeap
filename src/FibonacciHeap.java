@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * FibonacciHeap
  *
@@ -5,7 +8,8 @@
  */
 public class FibonacciHeap
 {
-	private HeapNode[][] heap = new HeapNode[0][0];
+	private List<HeapNode> heap = new ArrayList<HeapNode>();
+	private List heapSize = new ArrayList();
 	private boolean isEmpty = true;
 	private int size = 0;
 	private HeapNode min_node = null;
@@ -37,7 +41,9 @@ public class FibonacciHeap
     	if (isEmpty) {
     		this.setEmptyness(false);
     	}
-    	return new HeapNode(key); // should be replaced by student code
+    	HeapNode newNode = new HeapNode(key);
+    	heap.add(newNode);
+    	return newNode;
     }
 
    /**
@@ -60,7 +66,7 @@ public class FibonacciHeap
     */
     public HeapNode findMin()
     {
-    	return new HeapNode(0);// should be replaced by student code
+    	return this.min_node;// should be replaced by student code
     } 
     
    /**
@@ -82,7 +88,7 @@ public class FibonacciHeap
     */
     public int size()
     {
-    	return 0; // should be replaced by student code
+    	return this.size; // should be replaced by student code
     }
     	
     /**
