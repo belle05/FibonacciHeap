@@ -38,11 +38,14 @@ public class FibonacciHeap
     
     public HeapNode insert(int key)
     {    
-    	if (isEmpty) {
-    		this.setEmptyness(false);
-    	}
     	HeapNode newNode = new HeapNode(key);
     	heap.add(newNode);
+    	if (isEmpty) {
+    		this.setEmptyness(false);
+    		this.min_node =  newNode;
+    	} else if (key < this.min_node.getKey()) {
+    		this.min_node = newNode;
+    	}
     	return newNode;
     }
 
@@ -200,7 +203,7 @@ public class FibonacciHeap
     		this.setKey(key);
     	}
     	
-	   	public int getKey(int key) {
+	   	public int getKey() {
 			return this.key;
 		}
     	
