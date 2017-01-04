@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
 public class FibonacciHeap
 {
 	private List<HeapNode> heap = new ArrayList<HeapNode>();
-	private List heapSize = new ArrayList();
+	private List<Integer> heapSize = new ArrayList();
 	private boolean isEmpty = true;
 	private int size = 0;
 	private HeapNode min_node = null;
@@ -40,6 +41,7 @@ public class FibonacciHeap
     {    
     	HeapNode newNode = new HeapNode(key);
     	heap.add(newNode);
+    	heapSize.add(1);
     	if (isEmpty) {
     		this.setEmptyness(false);
     		this.min_node =  newNode;
@@ -102,8 +104,12 @@ public class FibonacciHeap
     */
     public int[] countersRep()
     {
-	int[] arr = new int[42];
-        return arr; //	 to be replaced by student code
+    	int largest_tree = Collections.max(this.heapSize);
+    	int[] sizes_array = new int[largest_tree];
+    	for (int i=0; i < largest_tree; i++){
+    		sizes_array[i] = Collections.frequency(heapSize, i);
+    	}
+        return sizes_array;
     }
 
    /**
