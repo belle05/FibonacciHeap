@@ -13,7 +13,6 @@ import java.util.TreeMap;
 //TODO:experiments
 public class FibonacciHeap
 {
-	private TreeMap<Integer,HeapNode> heapMap =new TreeMap<Integer,HeapNode>();
 	private List<HeapNode> heap = new ArrayList<HeapNode>();
 	private List<Integer> heapSize = new ArrayList();
 	private boolean isEmpty = true;
@@ -74,7 +73,8 @@ public class FibonacciHeap
     		return;
     	}
     	//we can be sure that min_node isn't null:
-    	HeapNode temp = addMinChildrenToRoots();//TODO - this doesn't delete min, need to check
+    	HeapNode temp = addMinChildrenToRoots();
+    	//TODO - this doesn't delete min, need to check
     	findMinInDoubleLinkedList(temp);
     	if (min_node != null){
     		link(); 
@@ -88,7 +88,7 @@ public class FibonacciHeap
 		if (temp != null){
 			HeapNode brother = temp.getLeft();
 			//while we haven't completed a circle, check if the next left sibling has a smaller key:
-			while (brother != temp){
+			while (brother != null && brother != temp){
 				if (brother.key<min_node.key){
 					min_node = brother;
 				}
@@ -98,20 +98,23 @@ public class FibonacciHeap
 	}
 
 	private void link() {
-		HeapNode[] arrByRanks = new HeapNode[size];
+		HeapNode[] arrByRanks = new HeapNode[(int)(Math.log(size)/Math.log(2)+1e-10)+1];
 		HeapNode current = min_node;
-		
+		if (size == 1){
+			return;
+		}
 		//We want to go over the roots, and for each one, if we already have a tree with the same degree
 		//link the two of them, and so on until it has a unique rank.
 		do{
 			int rank = current.getDegree();
+			HeapNode left = current.getLeft();
 			while (arrByRanks[rank] != null){
 				current = linkTwoTrees(current, arrByRanks[rank]);
 				arrByRanks[rank] = null;
 				rank = current.getDegree();
 			}
 			arrByRanks[rank] = current;
-			current = current.getLeft();
+			current = left;
 		}while(current != min_node);
 	}
 	
@@ -130,6 +133,7 @@ public class FibonacciHeap
 		HeapNode child = current.child;
 		if (child == null){
 			current.setChild(heapNode);
+			
 		} else{
 		//add heapNode to current's children:
 			insertNodeToList(child, heapNode);
@@ -141,7 +145,7 @@ public class FibonacciHeap
 	
 
 	private HeapNode detachNodeFromItsSiblings(HeapNode heapNode) {
-		if (heapNode.getLeft() != heapNode && heapNode.getLeft() != null){
+		if (heapNode.getLeft() != null && heapNode.getLeft() != heapNode ){
 			heapNode.left.setRight(heapNode.right);
 			HeapNode left = heapNode.getLeft();
 			heapNode.left = null;
@@ -152,13 +156,30 @@ public class FibonacciHeap
 	}
 
 	private void insertNodeToList(HeapNode node, HeapNode toInsert) {
-		if (node.getRight() != null){
+		//if the node to insert has siblings, we want to enter all of them:
+		if (toInsert.getRight() != null && toInsert.getRight() != toInsert){
+			insertListToList(node, toInsert);
+			return;
+		}
+		//The to insert node is alone, we can just deal with it:
+		if (node.getRight() != null && node.getRight() != node){
 			HeapNode rightChild = node.getRight();
 			rightChild.setLeft(toInsert);
 			node.setRight(toInsert);
 		}else{
 			node.setRight(toInsert);
 			node.setLeft(toInsert);
+		}
+	}
+	
+	private void insertListToList(HeapNode node, HeapNode toInsertBase){
+		if (node.getRight() != null && node.getRight() != node){
+			HeapNode toInsertLeft = toInsertBase.getLeft();
+			HeapNode nodeRight = node.getRight();
+			node.setRight(toInsertBase);
+			nodeRight.setLeft(toInsertLeft);
+		}else{
+			insertNodeToList(toInsertBase, node);
 		}
 	}
 	
@@ -172,19 +193,23 @@ public class FibonacciHeap
 	private HeapNode addMinChildrenToRoots() {
 		HeapNode returnNode = null;
 		HeapNode firstChild = min_node.child;
+		//Now returnNode holds min's brother:
+		returnNode = detachNodeFromItsSiblings(min_node);
 		//We want to add all of the child to be roots, so we will link them in together with the other roots:
-		if (firstChild != null){
-			//connect min_left to child, connect min.right to child.left
-			insertNodeToList(min_node, firstChild);
-			HeapNode leftChild = firstChild.getLeft();
-			min_node.left.setRight(firstChild);
-			firstChild.setLeft(min_node.getLeft());
-			min_node.right.setLeft(leftChild);
-			leftChild.setRight(min_node.right);
-			returnNode= leftChild;
-		}else{
-			//no children, we just want to get rid of min:
-			returnNode = detachNodeFromItsSiblings(min_node);
+		//if returnNode is null, min had brothers:
+		if (returnNode != null){
+			if(firstChild !=null){
+				//first of all detach all the children from their parents:
+				HeapNode curr = firstChild;
+				do{
+					curr.setParent(null);
+				}while (curr != null && curr != firstChild);
+				//now add the children to the roots:
+				insertNodeToList(returnNode, firstChild);
+			}
+		} else {
+			//min has no siblings, just it's children..
+			returnNode =firstChild;
 		}
 		//decrease size:
 		size--;
@@ -213,16 +238,16 @@ public class FibonacciHeap
     public void meld (FibonacciHeap heap2)
     {
     	//TODO
-    	if (heap2 ==null){
+    	if (heap2 ==null || heap2.isEmpty){
     		return;
     	}
-    	//Add to the list of sources all the sources of the second heap
-    	this.heap.addAll(heap2.heap);
-    	//if this heap was empty, or the other heap wansn't empty and it's min was smaller than ours - change the min node.
-    	if (this.min_node == null || (heap2.min_node != null && this.min_node.getKey() > heap2.min_node.getKey())){
+    	if (this.empty()){
     		this.min_node = heap2.min_node;
-    	}//otherwise - there's no reason to change min..
-    	
+    	}
+    	else{
+    		insertNodeToList(min_node, heap2.findMin());
+        	findMinInDoubleLinkedList(min_node);
+    	}
     	//update size and marked:
     	this.size += heap2.size;
     	this.marked += heap2.marked;
@@ -330,7 +355,17 @@ public class FibonacciHeap
     */
     public int potential() 
     {    
-    	return (this.heap.size() + 2*this.marked); 
+    	int countRoots = 0;
+    	if (min_node == null){
+    		return 0;
+    	}
+    	HeapNode current = min_node;
+    	do{
+    		countRoots++;
+    		current = current.getLeft();
+    	} while (current != null && current !=min_node);
+    			
+    	return (countRoots+ 2*this.marked); 
     }
 
    /**
