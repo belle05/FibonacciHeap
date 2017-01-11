@@ -137,5 +137,39 @@ public class FibonacciHeapTests {
 
 	}
 	
+	@Test
+	public void expperiments(){
+		int base = 1000;
+		for (int i=1; i<=3; i++){
+			singleExperiments(i*base,false);
+			singleExperiments(i*base,true);
+		}
+	}
+	
+	
+	private void singleExperiments(int size,boolean delete){
+		int[] toInsert = new int[size];
+		int j=0;
+		for (int i=size; i>0;i-- ){
+			toInsert[j]=i;
+			j++;
+		}
+		FibonacciHeap heap = new FibonacciHeap();
+		long startTime = System.nanoTime();
+		for (int i=0; i<size; i++){
+			heap.insert(toInsert[i]);
+		}
+		if (delete){
+			for (int i=0; i<=size/2; i++){
+				heap.deleteMin();
+			}
+		}
+		long endTime = System.nanoTime();
+		double seconds = (double)(endTime-startTime);
+		System.out.println("InsertExperiment- Size: " + size + " deletd:" + delete + " Elapsesd: "+ seconds +
+		" totalLinks: "+ heap.totalLinks() + " totalCuts: " + heap.totalCuts() + " potential: " + heap.potential());
+		
+	}
+	
 
 }

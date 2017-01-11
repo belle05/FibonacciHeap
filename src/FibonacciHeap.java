@@ -13,12 +13,15 @@ import java.util.TreeMap;
 //TODO:experiments
 public class FibonacciHeap
 {
-	private List<HeapNode> heap = new ArrayList<HeapNode>();
+	private List<HeapNode> roots = new ArrayList<HeapNode>();
 	private List<Integer> heapSize = new ArrayList();
 	private boolean isEmpty = true;
 	private int size = 0;
 	private HeapNode min_node = null;
-	private int marked;
+	
+	private static int totalLinks = 0;
+	private static int totalCuts =0;
+	private int marked = 0;
    /**
     * public boolean empty()
     *
@@ -45,7 +48,7 @@ public class FibonacciHeap
     public HeapNode insert(int key)
     {    
     	HeapNode newNode = new HeapNode(key);
-    	heap.add(newNode);
+    	roots.add(newNode);
     	heapSize.add(1);
     	if (isEmpty) {
     		this.setEmptyness(false);
@@ -140,6 +143,7 @@ public class FibonacciHeap
 		}
 		heapNode.setParent(current);
 		current.setDegree(current.getDegree()+1);
+		totalLinks++;
 		return current;
 	}
 	
@@ -290,7 +294,7 @@ public class FibonacciHeap
     public void arrayToHeap(int[] array)
     {
     	if (array.length == 0) {
-    		this.heap = new ArrayList<HeapNode>();
+    		this.roots = new ArrayList<HeapNode>();
     		this.heapSize = new ArrayList();
     		this.isEmpty = true;
     		this.size = 0;
@@ -343,6 +347,8 @@ public class FibonacciHeap
     
    private void cascadingCut(HeapNode x, HeapNode y) {
 	// TODO Auto-generated method stub
+	   //TODO - Add to totalCuts counter
+	   //TODO update marked when marking and unmarking
 	
 }
 
@@ -378,7 +384,7 @@ public class FibonacciHeap
     */
     public static int totalLinks()
     {    
-    	return 0; // should be replaced by student code
+    	return totalLinks; // should be replaced by student code
     }
 
    /**
@@ -389,7 +395,7 @@ public class FibonacciHeap
     */
     public static int totalCuts()
     {    
-    	return 0; // should be replaced by student code
+    	return totalCuts; // should be replaced by student code
     }
     
    /**
