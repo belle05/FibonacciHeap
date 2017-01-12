@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeMap;
 
 /**
  * FibonacciHeap
@@ -12,7 +11,6 @@ public class FibonacciHeap
 {
 	private List<HeapNode> roots = new ArrayList<HeapNode>();
 	private List<Integer> heapSize = new ArrayList();
-	private boolean isEmpty = true;
 	private int size = 0;
 	private HeapNode min_node = null;
 	
@@ -30,7 +28,7 @@ public class FibonacciHeap
     */
     public boolean empty()
     {
-    	return isEmpty; // should be replaced by student code
+    	return roots.isEmpty(); // should be replaced by student code
     }
 		
    /**
@@ -38,23 +36,19 @@ public class FibonacciHeap
     *
     * Creates a node (of type HeapNode) which contains the given key, and inserts it into the heap. 
     */
-    private void setEmptyness(boolean emptyness) {
-    	this.isEmpty = emptyness;
-    }
     
     public HeapNode insert(int key)
-    {    
+    {   
     	HeapNode newNode = new HeapNode(key);
-    	getRoots().add(newNode);
-    	heapSize.add(1);
-    	if (isEmpty) {
-    		this.setEmptyness(false);
+    	if (empty()) {
     		this.min_node =  newNode;
     	} else{
     		if (key < this.min_node.getKey()) {
     			this.min_node = newNode;		
     		}
     	}
+    	getRoots().add(newNode);
+    	heapSize.add(1);
     	size++;
     	return newNode;
     }
@@ -67,7 +61,7 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
-    	if (empty()){
+    	if (min_node ==null || empty()){
     		return;
     	}
     	//we can be sure that min_node isn't null:
@@ -82,7 +76,7 @@ public class FibonacciHeap
 
 	private void findMinInroots() {
 		//we want to look from the starting point temp for the minimum between it's siblings.
-		if (getRoots() != null && !(getRoots().isEmpty())){
+		if (roots!= null && !(roots.isEmpty())){
 			min_node = getRoots().get(0);
 			for (int i=1; i<getRoots().size(); i++){
 				if (getRoots().get(i).getKey() < min_node.getKey()){
@@ -188,7 +182,10 @@ public class FibonacciHeap
     */
     public void meld (FibonacciHeap heap2)
     {
-    	getRoots().addAll(heap2.getRoots());
+    	if (heap2 ==null){
+    		throw new IllegalArgumentException();
+    	}
+    	roots.addAll(heap2.getRoots());
     	findMinInroots();
     	
     	//update size and marked:
@@ -235,7 +232,6 @@ public class FibonacciHeap
     	if (array.length == 0) {
     		this.setRoots(new ArrayList<HeapNode>());
     		this.heapSize = new ArrayList();
-    		this.isEmpty = true;
     		this.size = 0;
     		this.min_node = null;
     	}
@@ -250,6 +246,9 @@ public class FibonacciHeap
     */
     public void delete(HeapNode x) 
     {    
+    	if (x == null){
+    		throw new IllegalArgumentException();
+    	}
     	//we already have a function in charge of deleting a node, why not use it?
     	//So we we'll decrease the key to be smaller than the min, and then delete min
     	//key - delta = min-1 => key-min+1 = delta
@@ -265,6 +264,9 @@ public class FibonacciHeap
     */
     public void decreaseKey(HeapNode x, int delta)
     {
+    	if(x == null){
+    		throw new IllegalArgumentException();
+    	}
     	x.setKey(x.getKey()- delta);
     	if (!(x.isLegalKey())){
     		HeapNode y = x.getParent();
