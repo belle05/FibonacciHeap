@@ -16,24 +16,15 @@ public class FibonacciHeapTests {
 				return "empty";
 			}
 			Stack<FibonacciHeap.HeapNode> stack = new Stack<FibonacciHeap.HeapNode>();
-			stack.push(this.findMin());
+			for (HeapNode root: getRoots()){
+				stack.push(root);
+			}
 			StringBuffer str = new StringBuffer();
 			while (!(stack.empty())){
 				FibonacciHeap.HeapNode curr = stack.pop();
 				str.append("\tkey-"+curr.key+" mark-" + curr.getMark()+" degree-"+curr.degree);
-				if(curr.getChild() != null){
-					stack.push(curr.getChild());
-				}
-				if(curr.getLeft() !=null){
-					FibonacciHeap.HeapNode start = curr;
-					curr = curr.getLeft();
-					while(curr!=start){
-						str.append("\tkey-"+curr.key+" mark-" + curr.getMark()+" degree-"+curr.degree);
-						if(curr.getChild() != null){
-							stack.push(curr.getChild());
-						}
-						curr = curr.getLeft();
-					}
+				for (HeapNode child: curr.getChildren()){
+					stack.push(child);
 				}
 			}
 			return str.toString();
@@ -138,7 +129,7 @@ public class FibonacciHeapTests {
 	}
 	
 	@Test
-	public void expperiments(){
+	public void experiments(){
 		int base = 1000;
 		for (int i=1; i<=3; i++){
 			singleExperiments(i*base,false);
@@ -155,6 +146,8 @@ public class FibonacciHeapTests {
 			j++;
 		}
 		FibonacciHeap heap = new FibonacciHeap();
+		heap.initializeCuts();
+		heap.initializeLinks();
 		long startTime = System.nanoTime();
 		for (int i=0; i<size; i++){
 			heap.insert(toInsert[i]);
