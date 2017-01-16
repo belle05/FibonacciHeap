@@ -15,7 +15,7 @@ public class FibonacciHeap
 	
 	private static int totalLinks = 0;
 	private static int totalCuts =0;
-	private int marked = 0;
+	public int marked = 0;
    /**
     * public boolean empty()
     *
@@ -97,7 +97,7 @@ public class FibonacciHeap
 	}
 
 	private void link() {
-		HeapNode[] arrByRanks = new HeapNode[(int)(Math.log(size)/Math.log(2)+1e-10)+1];
+		HeapNode[] arrByRanks = new HeapNode[(int)(Math.log(size)/Math.log(2)+1e-10)+2];
 		if (size <= 1){
 			return;
 		}
@@ -127,7 +127,7 @@ public class FibonacciHeap
 			heapNode = temp;
 		}
 		
-		//remove heapnode from it's siblings:
+		//remove heapNode from it's siblings:
 		//we know that there are at least two trees, so it's linked to some other node and not to itself:
 		detachNodeFromItsSiblings(heapNode);
 		current.addChild(heapNode);
@@ -230,8 +230,8 @@ public class FibonacciHeap
     		heapSizes.add(root.degree);
     	}
     	int largest_tree = Collections.max(heapSizes);
-    	int[] sizes_array = new int[Collections.max(heapSizes)];
-    	for (int i=0; i < largest_tree; i++){
+    	int[] sizes_array = new int[largest_tree+1];
+    	for (int i=0; i <= largest_tree; i++){
     		sizes_array[i] = Collections.frequency(heapSizes, i);
     	}
         return sizes_array;
@@ -284,19 +284,11 @@ public class FibonacciHeap
     	}
     	x.setKey(x.getKey()- delta);
     	if (!(x.isLegalKey())){
-    		HeapNode y = x.getParent();
-    		if (y!= null && y.mark){
-    			cascadingCut(x);
-    			
-    		}
-    		else{
-    			y.setMark(true);
-    			this.marked +=1;
-    		}
+    		cascadingCut(x);
     	}
     	if (x.getKey() < min_node.getKey()){
     		min_node = x;
-    	}	
+    	}
     }
 
    private void cut(HeapNode node) {
@@ -306,7 +298,7 @@ public class FibonacciHeap
 	   if (parent == null)
 		   throw new IllegalArgumentException();
 	   parent.setDegree(parent.getDegree() - 1);
-	   roots.add(node);
+	   getRoots().add(node);
 	   parent.removeChild(node);	   
    } 
     
@@ -316,7 +308,6 @@ public class FibonacciHeap
            this.marked -= 1;        	
        }
        this.cut(node);
-       
        if (parent.parent != null) {
            if (!(parent.mark)) {
         	   this.marked += 1;
@@ -338,7 +329,6 @@ public class FibonacciHeap
     */
     public int potential() 
     {    
- 
     	return (getRoots().size()+ 2*this.marked); 
     }
 
@@ -454,7 +444,7 @@ public void setRoots(List<HeapNode> roots) {
 	   	
 	   	public boolean isLegalKey(){
 	   		if(this.parent != null){
-	   			return this.key<this.parent.getKey();
+	   			return this.key>this.parent.getKey();
 	   		}
 	   		return true;
 	   	}
