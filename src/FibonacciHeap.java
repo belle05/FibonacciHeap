@@ -10,7 +10,6 @@ import java.util.List;
 public class FibonacciHeap
 {
 	private List<HeapNode> roots = new ArrayList<HeapNode>();
-	private List<Integer> heapSize = new ArrayList();
 	private int size = 0;
 	private HeapNode min_node = null;
 	
@@ -26,6 +25,15 @@ public class FibonacciHeap
     * is empty.
     *   
     */
+	private void initializeHeap(){
+		roots = new ArrayList<HeapNode>();
+		size = 0;
+		min_node = null;
+		initializeLinks();
+		initializeCuts();
+		marked = 0;
+	}
+	
     public boolean empty()
     {
     	return roots.isEmpty(); // should be replaced by student code
@@ -217,10 +225,14 @@ public class FibonacciHeap
     */
     public int[] countersRep()
     {
-    	int largest_tree = Collections.max(this.heapSize);
-    	int[] sizes_array = new int[largest_tree];
+    	List<Integer> heapSizes = new ArrayList<Integer>();
+    	for (HeapNode root:roots){
+    		heapSizes.add(root.degree);
+    	}
+    	int largest_tree = Collections.max(heapSizes);
+    	int[] sizes_array = new int[Collections.max(heapSizes)];
     	for (int i=0; i < largest_tree; i++){
-    		sizes_array[i] = Collections.frequency(heapSize, i);
+    		sizes_array[i] = Collections.frequency(heapSizes, i);
     	}
         return sizes_array;
     }
@@ -233,13 +245,11 @@ public class FibonacciHeap
     */
     public void arrayToHeap(int[] array)
     {
-    	if (array.length == 0) {
-    		this.setRoots(new ArrayList<HeapNode>());
-    		this.size = 0;
-    		this.min_node = null;
-    	}
-    	else {
-    		
+    	initializeHeap();
+    	if (array.length > 0) {
+    		for (int key:array){
+    			insert(key);
+    		}
     	}
     }
 	
