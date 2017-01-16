@@ -42,6 +42,7 @@ public class FibonacciHeap
     	HeapNode newNode = new HeapNode(key);
     	if (empty()) {
     		this.min_node =  newNode;
+    		
     	} else{
     		if (key < this.min_node.getKey()) {
     			this.min_node = newNode;		
@@ -265,7 +266,7 @@ public class FibonacciHeap
     * public void decreaseKey(HeapNode x, int delta)
     *
     * The function decreases the key of the node x by delta. The structure of the heap should be updated
-    * to reflect this chage (for example, the cascading cuts procedure should be applied if needed).
+    * to reflect this change (for example, the cascading cuts procedure should be applied if needed).
     */
     public void decreaseKey(HeapNode x, int delta)
     {
@@ -276,7 +277,7 @@ public class FibonacciHeap
     	if (!(x.isLegalKey())){
     		HeapNode y = x.getParent();
     		if (y!= null && y.mark){
-    			cascadingCut(x,y);
+    			cascadingCut(x);
     			
     		}
     		else{
@@ -289,9 +290,34 @@ public class FibonacciHeap
     	}	
     }
 
+   private void cut(HeapNode node) {
+	   HeapNode parent = node.getParent();
+	   totalCuts += 1;
+	   node.mark = false;
+	   if (parent == null)
+		   throw new IllegalArgumentException();
+	   parent.setDegree(parent.getDegree() - 1);
+	   roots.add(node);
+	   parent.removeChild(node);	   
+   } 
     
-    
-   private void cascadingCut(HeapNode x, HeapNode y) {
+   private void cascadingCut(HeapNode node) {
+	   HeapNode parent = node.getParent();
+       if (node.mark) {
+           this.marked -= 1;        	
+       }
+       if (parent.parent != null && !parent.mark) {
+           this.marked += 1;        	
+       }
+       this.cut(node);
+       
+       if (parent.parent != null) {
+           if (!(parent.mark)) {
+               parent.mark = true;
+           } else {
+               cascadingCut(parent);
+           }
+       }
 	// TODO Auto-generated method stub
 	   //TODO - Add to totalCuts counter
 	   //TODO update marked when marking and unmarking
