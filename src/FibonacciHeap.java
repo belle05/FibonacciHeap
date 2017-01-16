@@ -155,6 +155,10 @@ public class FibonacciHeap
 		getRoots().addAll(minChildren);
 		for (HeapNode child:minChildren){
 			child.setParent(null);
+			if(child.getMark()==true){
+				child.setMark(false);
+				marked--;
+			}
 		}
 		//decrease size:
 		size--;
