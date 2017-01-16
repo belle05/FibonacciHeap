@@ -315,13 +315,11 @@ public class FibonacciHeap
        if (node.mark) {
            this.marked -= 1;        	
        }
-       if (parent.parent != null && !parent.mark) {
-           this.marked += 1;        	
-       }
        this.cut(node);
        
        if (parent.parent != null) {
            if (!(parent.mark)) {
+        	   this.marked += 1;
                parent.mark = true;
            } else {
                cascadingCut(parent);
