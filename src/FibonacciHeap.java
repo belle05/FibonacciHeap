@@ -15,7 +15,7 @@ public class FibonacciHeap
 	
 	private static int totalLinks = 0;
 	private static int totalCuts =0;
-	public int marked = 0;
+	private int marked = 0;
    /**
     * public boolean empty()
     *
