@@ -48,8 +48,7 @@ public class FibonacciHeap
     		}
     	}
     	getRoots().add(newNode);
-    	heapSize.add(1);
-    	size++;
+    	this.size++;
     	return newNode;
     }
 
@@ -235,7 +234,9 @@ public class FibonacciHeap
     		this.size = 0;
     		this.min_node = null;
     	}
-        return; //	 to be replaced by student code
+    	else {
+    		
+    	}
     }
 	
    /**
