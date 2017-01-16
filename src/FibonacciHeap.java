@@ -235,7 +235,6 @@ public class FibonacciHeap
     {
     	if (array.length == 0) {
     		this.setRoots(new ArrayList<HeapNode>());
-    		this.heapSize = new ArrayList();
     		this.size = 0;
     		this.min_node = null;
     	}
@@ -319,8 +318,6 @@ public class FibonacciHeap
            }
        }
 	// TODO Auto-generated method stub
-	   //TODO - Add to totalCuts counter
-	   //TODO update marked when marking and unmarking
 	
 }
 
