@@ -1,3 +1,7 @@
+/***
+ * @author Carine Bell Feder 203336425
+ * @author Tami Lavi 203010574
+ */
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,22 +13,19 @@ import java.util.List;
  */
 public class FibonacciHeap
 {
+	//Array list to hold roots of fibonacci trees in the heap:
 	private List<HeapNode> roots = new ArrayList<HeapNode>();
 	private int size = 0;
 	private HeapNode min_node = null;
+	private int marked = 0;
 	
+	//Parameters to 
 	private static int totalLinks = 0;
 	private static int totalCuts =0;
-	private int marked = 0;
-   /**
-    * public boolean empty()
-    *
-    * precondition: none
-    * 
-    * The method returns true if and only if the heap
-    * is empty.
-    *   
-    */
+	
+	/***
+	 * Initialize all heap parameters:
+	 */
 	private void initializeHeap(){
 		roots = new ArrayList<HeapNode>();
 		size = 0;
@@ -34,6 +35,16 @@ public class FibonacciHeap
 		marked = 0;
 	}
 	
+
+	   /**
+	    * public boolean empty()
+	    *
+	    * precondition: none
+	    * 
+	    * The method returns true if and only if the heap
+	    * is empty.
+	    *   
+	    */
     public boolean empty()
     {
     	return roots.isEmpty(); // should be replaced by student code
@@ -61,6 +72,7 @@ public class FibonacciHeap
     	return newNode;
     }
 
+    
    /**
     * public void deleteMin()
     *
@@ -69,23 +81,30 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
+    	//if the heap is empty, there is nothing to do:
     	if (min_node ==null || empty()){
     		return;
     	}
     	//we can be sure that min_node isn't null:
+    	//lets add it's children to the roots:
     	addMinChildrenToRoots();
-    	//TODO - this doesn't delete min, need to check
-    	findMinInroots();
+    	//and now link all the roots:
     	if (min_node != null){
     		link(); 
     	}
+    	//after we've linked, there should be O(log(size)) roots, now lets find the minimum:
+    	findMinInroots();
      	
     }
 
+    /***
+     * Updates the min-node:
+     */
 	private void findMinInroots() {
-		//we want to look from the starting point temp for the minimum between it's siblings.
+		//if we have roots, there should be a minimum:
 		if (roots!= null && !(roots.isEmpty())){
 			min_node = getRoots().get(0);
+			//look for the minimum:
 			for (int i=1; i<getRoots().size(); i++){
 				if (getRoots().get(i).getKey() < min_node.getKey()){
 					min_node = getRoots().get(i);
@@ -93,19 +112,30 @@ public class FibonacciHeap
 			}
 			return;
 		}
+		//there aren't any nodes, so theere isn't a miniumum:
 		min_node = null;
 	}
-
+	
+	/**
+	 * This method is incharge of linking the roots according to size
+	 */
 	private void link() {
-		HeapNode[] arrByRanks = new HeapNode[(int)(Math.log(size)/Math.log(2)+1e-10)+2];
 		if (size <= 1){
 			return;
 		}
+		//We want to link each two trees the same size, so we will hold an array with the possible sizes:
+		int arrSize = (int)(Math.log(size)/Math.log(2)+1e-10)+2;
+		HeapNode[] arrByRanks = new HeapNode[arrSize];
+		
+		
 		int index = 0;
 		int rootsSize = getRoots().size();
+		//while there is still a root we haven't checked or roots we've updated:
 		while(index < rootsSize){
 			HeapNode current = getRoots().get(index);
+			//this will help us decide if to link two trees:
 			int rank = current.getDegree();
+			//While it doesn't have a unique tree size, link with the tree it's size:
 			while (arrByRanks[rank] != null){
 				current = linkTwoTrees(current, arrByRanks[rank]);
 				arrByRanks[rank] = null;
@@ -113,12 +143,19 @@ public class FibonacciHeap
 				index--;
 				rootsSize --;
 			}
+			//we now that current has a unique size now, we can add it to the array safely:
 			arrByRanks[rank] = current;
 			index++;
 		}
 	}
 	
 
+	/**
+	 * Incharge of melding two trees togetherr:
+	 * @param current - the current root we are checking
+	 * @param heapNode - the heapNode of the root with the same degree ad current
+	 * @return the new root of the linked tree (the with with the smaller key between the two)
+	 */
 	private HeapNode linkTwoTrees(HeapNode current, HeapNode heapNode) {
 		//we want to make sure that current.key <= other.key: 
 		if(current.getKey() > heapNode.getKey()){
@@ -127,11 +164,12 @@ public class FibonacciHeap
 			heapNode = temp;
 		}
 		
-		//remove heapNode from it's siblings:
-		//we know that there are at least two trees, so it's linked to some other node and not to itself:
+		//remove heapNode from it's siblings and parent:
 		detachNodeFromItsSiblings(heapNode);
+		//add heapNode to it's new family:
 		current.addChild(heapNode);
 		heapNode.setParent(current);
+		//supdate the rank:
 		current.setDegree(current.getDegree()+1);
 		totalLinks++;
 		return current;
@@ -143,6 +181,7 @@ public class FibonacciHeap
 	 * @param heapNode - a HeapNode we would like to detach from it's siblings and parents.
 	 */
 	private void detachNodeFromItsSiblings(HeapNode heapNode) {
+		//We aren't sure iif the node is somene's child or not, handle bith cases:
 		if (heapNode.getParent() != null){
 			heapNode.getParent().removeChild(heapNode);
 		} else{
@@ -154,14 +193,15 @@ public class FibonacciHeap
 	
 
 	/**
-	 *  Here we want to add all min's children to the list:    
+	 *  Here we want to add all min's children to the roots:    
 	 */
 	private void addMinChildrenToRoots() {
 		ArrayList<HeapNode> minChildren = min_node.getChildren();
-		//Now returnNode holds min's brother:
+		//remove min_node from the roots:
 		detachNodeFromItsSiblings(min_node);
-		//We want to add all of the child to be roots, so we will link them in together with the other roots:
+		//We want to add all of the children to be roots, so we will link them in together with the other roots:
 		getRoots().addAll(minChildren);
+		//and update their mark & parent:
 		for (HeapNode child:minChildren){
 			child.setParent(null);
 			if(child.getMark()==true){
@@ -194,11 +234,19 @@ public class FibonacciHeap
     */
     public void meld (FibonacciHeap heap2)
     {
-    	if (heap2 ==null){
+    	//according to the instructions, this is an illegal argument:
+    	if (heap2 ==null ){
     		throw new IllegalArgumentException();
     	}
+    	//add to roots and update minimun:
     	roots.addAll(heap2.getRoots());
-    	findMinInroots();
+    	if (this.min_node == null){
+    		this.min_node = heap2.min_node;
+    	} else {
+	    	if (!(heap2.empty()) && heap2.min_node.key < this.min_node.key){
+	    		min_node = heap2.min_node;
+	    	}
+    	}
     	
     	//update size and marked:
     	this.size += heap2.size;
@@ -270,6 +318,7 @@ public class FibonacciHeap
     	this.decreaseKey(x,(x.getKey()-min_node.getKey() +1));
     	this.deleteMin();
     }
+    
 
    /**
     * public void decreaseKey(HeapNode x, int delta)
@@ -279,18 +328,24 @@ public class FibonacciHeap
     */
     public void decreaseKey(HeapNode x, int delta)
     {
-    	if(x == null){
+    	//according to the instructions, these are illegal arguments:
+    	if(x == null || delta <0){
     		throw new IllegalArgumentException();
     	}
+    	//update the key:
     	x.setKey(x.getKey()- delta);
+    	//if it isn't a legal situation, call cacading cuts:
     	if (!(x.isLegalKey())){
     		cascadingCut(x);
     	}
+    	//update minimum iif needed:
     	if (x.getKey() < min_node.getKey()){
     		min_node = x;
     	}
     }
 
+    
+    
    private void cut(HeapNode node) {
 	   HeapNode parent = node.getParent();
 	   totalCuts += 1;
@@ -314,11 +369,9 @@ public class FibonacciHeap
                parent.mark = true;
            } else {
                cascadingCut(parent);
-           }
-       }
-	// TODO Auto-generated method stub
-	
-}
+           } 
+       }	
+   }
 
 /**
     * public int potential() 
@@ -344,10 +397,13 @@ public class FibonacciHeap
     {    
     	return totalLinks; // should be replaced by student code
     }
+    
+    //Used because totalLinks is static, and at times we want to initialize it:
     public static void  initializeLinks(){
     	totalLinks = 0;
     }
     
+    //Same ad initializeCuts
     public static void initializeCuts(){
     	totalCuts = 0;
     }
@@ -365,28 +421,16 @@ public class FibonacciHeap
     
    public List<HeapNode> getRoots() {
 	return roots;
-}
-
-public void setRoots(List<HeapNode> roots) {
-	this.roots = roots;
-}
+   }
 
 /**
-    * public class HeapNode
-    * 
-    * If you wish to implement classes other than FibonacciHeap
-    * (for example HeapNode), do it in this file, not in 
-    * another file 
-    *  
+    * public class HeapNode 
     */
     public static class HeapNode{
     	protected int key;
     	protected boolean mark = false;
     	protected HeapNode parent = null;
-    	protected HeapNode child = null;
     	protected ArrayList<HeapNode> children = new ArrayList<HeapNode>();
-    	protected HeapNode left = null;
-    	protected HeapNode right = null;
     	protected int degree = 0;
     	
     	public HeapNode(int key) {
@@ -413,7 +457,7 @@ public void setRoots(List<HeapNode> roots) {
 			return parent;
 		}
 
-		public void setParent(HeapNode parent) {
+		public void  setParent(HeapNode parent) {
 			this.parent = parent;
 		}
 
@@ -442,6 +486,9 @@ public void setRoots(List<HeapNode> roots) {
 			this.degree = degree;
 		}
 	   	
+	   	/***
+	   	 * @return if the node is in a legal position
+	   	 */
 	   	public boolean isLegalKey(){
 	   		if(this.parent != null){
 	   			return this.key>this.parent.getKey();
@@ -449,6 +496,7 @@ public void setRoots(List<HeapNode> roots) {
 	   		return true;
 	   	}
 	   	
+	   	//Used to print the heap:
 	   	public String toString(){
 	   		return Integer.toString(key);
 	   	}

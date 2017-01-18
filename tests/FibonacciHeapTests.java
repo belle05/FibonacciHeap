@@ -158,7 +158,7 @@ public class FibonacciHeapTests {
 			}
 		}
 		long endTime = System.nanoTime();
-		double seconds = (double)(endTime-startTime);
+		double seconds = (double)(endTime-startTime)/(1000000);
 		System.out.println("InsertExperiment- Size: " + size + " deletd:" + delete + " Elapsesd: "+ seconds +
 		" totalLinks: "+ FibonacciHeap.totalLinks() + " totalCuts: " + FibonacciHeap.totalCuts() + " potential: " + heap.potential());
 		
@@ -566,6 +566,19 @@ public class FibonacciHeapTests {
 	        assertEquals(1, heap.countersRep()[1]);
 	        assertEquals(1, heap.countersRep()[2]);
 
+	    }
+	    
+	    @Test
+	    public void testArrayToHeap(){
+	    	FibonacciHeap heap = new FibonacciHeap();
+	    	int[] arr = {1,4,6,2,3,8};
+	    	int[] arr2 = {2};
+	    	for (int i:arr){
+	    		heap.insert(i);
+	    	}
+	    	heap.arrayToHeap(arr2);
+	    	assertEquals(1,heap.size());
+	    	assertEquals(2, heap.findMin().getKey());
 	    }
 
 }
