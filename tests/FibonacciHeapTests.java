@@ -153,11 +153,15 @@ public class FibonacciHeapTests {
 			heap.insert(toInsert[i]);
 		}
 		if (delete){
-			for (int i=0; i<=size/2; i++){
+			for (int i=0; i<size/2; i++){
 				heap.deleteMin();
 			}
 		}
 		long endTime = System.nanoTime();
+		if (delete){
+			assertEquals((int)(size-size/2), heap.size());
+			
+		}
 		double seconds = (double)(endTime-startTime)/(1000000);
 		System.out.println("InsertExperiment- Size: " + size + " deletd:" + delete + " Elapsesd: "+ seconds +
 		" totalLinks: "+ FibonacciHeap.totalLinks() + " totalCuts: " + FibonacciHeap.totalCuts() + " potential: " + heap.potential());
